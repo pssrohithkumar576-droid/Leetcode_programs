@@ -1,26 +1,29 @@
 class Solution:
     def maximumSubarraySum(self, nums: List[int], k: int) -> int:
+        freq = {}
+        window_sum = 0
+        maxSum = 0
+        left = 0
 
-        count = {}
-        current_sum = 0
-        answer = 0
+        for i in range(left,k):
+            window_sum += nums[i]
+            freq[nums[i]] = freq.get(nums[i],0) + 1
 
-        for right in range(len(nums)):
+        if len(freq) == k:
+            maxSum = window_sum
 
-            num = nums[right]
-            current_sum += num
-            count[num] = count.get(num, 0) + 1
+        for right in range(k,len(nums)):
+            left = right - k
+            window_sum -= nums[left]
 
-            if right >= k:
-                left_num = nums[right - k]
+            freq[nums[left]] -= 1
 
-                current_sum -= left_num
-                count[left_num] -= 1
+            if freq[nums[left]] == 0:
+                del freq[nums[left]]
 
-                if count[left_num] == 0:
-                    del count[left_num]
+            window_sum += nums[right]
+            freq[nums[right]] = freq.get(nums[right],0) + 1
 
-            if len(count) == k:
-                answer = max(answer, current_sum)
-
-        return answer
+            if len(freq) == k:
+                maxSum = max(window_sum,maxSum)
+        return maxSum
